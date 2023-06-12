@@ -42,10 +42,10 @@ class HelperFunctions {
 
 //Generate blank board
   static generateBlank(boardDimensions) {
-  const blankMatrix = [];
-  for (let i = 0; i < boardDimensions[0]; i++) {
-    blankMatrix.push([]);
-    for (let j = 0; j < boardDimensions[1]; j++) {
+    const blankMatrix = [];
+    for (let i = 0; i < boardDimensions[0]; i++) {
+      blankMatrix.push([]);
+      for (let j = 0; j < boardDimensions[1]; j++) {
         blankMatrix[i].push(0)
       }
     }
@@ -55,35 +55,50 @@ class HelperFunctions {
 //Returns an array of all coordinates in the 8 squares around [x, y]. Accounts for corners and edges.
 //It's not elegant, but it'll work.
   static getCoordinatesAround(x, y, boardMatrix) {
-  const coords = []
-  if (y === 0) {
-    if (x === 0) {
-      coords.push([x + 1, y], [x, y + 1], [x + 1, y + 1]);
-    } else if (x === boardMatrix[y].length - 1) {
-      coords.push([x - 1, y], [x, y + 1], [x - 1, y + 1]);
+    const coords = []
+    if (y === 0) {
+      if (x === 0) {
+        coords.push([x + 1, y], [x, y + 1], [x + 1, y + 1]);
+      } else if (x === boardMatrix[y].length - 1) {
+        coords.push([x - 1, y], [x, y + 1], [x - 1, y + 1]);
+      } else {
+        coords.push([x - 1, y], [x + 1, y], [x - 1, y + 1], [x, y + 1], [x + 1, y + 1]);
+      }
+    } else if (y === boardMatrix.length - 1) {
+      if (x === 0) {
+        coords.push([x + 1, y], [x, y - 1], [x + 1, y - 1]);
+      } else if (x === boardMatrix[y].length - 1) {
+        coords.push([x - 1, y], [x, y - 1], [x - 1, y - 1]);
+      } else {
+        coords.push([x - 1, y], [x + 1, y], [x - 1, y - 1], [x, y - 1], [x + 1, y - 1]);
+      }
     } else {
-      coords.push([x - 1, y], [x + 1, y], [x - 1, y + 1], [x, y + 1], [x + 1, y + 1]);
+      if (x === 0) {
+        coords.push([x, y - 1], [x, y + 1], [x + 1, y - 1], [x + 1, y], [x + 1, y + 1]);
+      } else if (x === boardMatrix[y].length - 1) {
+        coords.push([x, y - 1], [x, y + 1], [x - 1, y - 1], [x - 1, y], [x - 1, y + 1]);
+      } else {
+        coords.push([x - 1, y - 1], [x, y - 1], [x + 1, y - 1], [x - 1, y], [x + 1, y], [x - 1, y + 1], [x, y + 1], [x + 1 , y + 1]);
+      }
     }
-  } else if (y === boardMatrix.length - 1) {
-    if (x === 0) {
-      coords.push([x + 1, y], [x, y - 1], [x + 1, y - 1]);
-    } else if (x === boardMatrix[y].length - 1) {
-      coords.push([x - 1, y], [x, y - 1], [x - 1, y - 1]);
-    } else {
-      coords.push([x - 1, y], [x + 1, y], [x - 1, y - 1], [x, y - 1], [x + 1, y - 1]);
-    }
-  } else {
-    if (x === 0) {
-      coords.push([x, y - 1], [x, y + 1], [x + 1, y - 1], [x + 1, y], [x + 1, y + 1]);
-    } else if (x === boardMatrix[y].length - 1) {
-      coords.push([x, y - 1], [x, y + 1], [x - 1, y - 1], [x - 1, y], [x - 1, y + 1]);
-    } else {
-      coords.push([x - 1, y - 1], [x, y - 1], [x + 1, y - 1], [x - 1, y], [x + 1, y], [x - 1, y + 1], [x, y + 1], [x + 1 , y + 1]);
-    }
+    return coords;
   }
-  return coords;
 
-}
+  //Reveals all zeroes and squares on the border of zeros. (i.e. when a zero is clicked, it also reveals everything around them.)
+  static revealZeros = (x, y, clickedBoardClone, boardMatrix) => {
+    debugger;
+    clickedBoardClone[y][x] = 1;
+    const coordsAround = HelperFunctions.getCoordinatesAround(x, y, boardMatrix);
+    let unclickedCoordsAround = coordsAround.filter((coordinate) => clickedBoardClone[coordinate[1]][coordinate[0]] === 0);
+    if (boardMatrix[y][x] === 0) {
+      for (let i = 0; i < unclickedCoordsAround.length; i++) {
+        let [cX, cY] = unclickedCoordsAround[i];
+        clickedBoardClone = this.revealZeros(cX, cY, clickedBoardClone, boardMatrix);
+      }
+    }
+    return clickedBoardClone;
+  }
+
 
 }
 

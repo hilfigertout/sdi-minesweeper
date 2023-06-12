@@ -1,38 +1,41 @@
 import Square from "./Square";
-import {useReducer, useState} from 'react';
+import {useState, useEffect, useContext} from 'react';
 import HelperFunctions from "./helperfunctions";
+import GameContext from "./GameContext";
 
-const GameBoard = ({boardMatrix, boardDimensions}) => {
+const GameBoard = ({boardMatrix}) => {
 
-  const [gameOver, setGameOver] = useState(false)
+  const [gameStatus, setGameStatus] = useContext(GameContext);
 
-  
-  
-  const clickSpace = (state, action) => {
-    let newState = structuredClone(state);
-    let x = action.x;
-    let y = action.y;
-    newState[y][x] = 1;
-    return newState;
-  }
-  const [clickedBoard, clickedBoardDispatch] = useReducer(clickSpace, boardDimensions, HelperFunctions.generateBlank);
+  let {gameOver, playerAlive, numMines, boardDimensions} = gameStatus;
+  const [clickedBoard, setClickedBoard] = useState(HelperFunctions.generateBlank(boardDimensions));
 
+  useEffect(() => {
+    setClickedBoard(HelperFunctions.generateBlank(boardDimensions))
+  }, [boardDimensions])
 
-  const handleClick = (x, y, clickedSquares) => {
+  const handleClick = (x, y) => {
     if (!gameOver) {
-      clickedBoardDispatch({type: 'click', x, y})
+      let newBoard = structuredClone(clickedBoard);
+      newBoard[y][x] = 1;
+      setClickedBoard(newBoard)
       if (boardMatrix[y][x] === 'X') {
-        setGameOver(true);
+        setGameStatus({...gameStatus, gameOver: true, playerAlive: false})
       } else {
         let minesAround = boardMatrix[y][x];
         if (minesAround === 0) {
-          debugger;
-          const coordsAround = HelperFunctions.getCoordinatesAround(x, y, boardMatrix);
-          
-          let unclickedCoordsAround = coordsAround.filter((coordinate) => !(clickedSquares.find((clickedCoord) => JSON.stringify(clickedCoord) === JSON.stringify(coordinate))));
-          unclickedCoordsAround.forEach((coordinate) => handleClick(coordinate[0], coordinate[1], [...clickedSquares, [x, y]]));
+          newBoard = HelperFunctions.revealZeros(x,y, newBoard, boardMatrix);
         }
       }
+      let numSpacesLeft = newBoard.reduce((sum, row) => {
+        return sum + row.reduce((rowSum, clicked) => {
+          return clicked === 0 ? rowSum + 1: rowSum;
+        }, 0)
+      }, 0)
+      if (numSpacesLeft === numMines) {
+        setGameStatus({...gameStatus, gameOver: true, playerAlive: (boardMatrix[y][x] !== 'X')})
+      }
+      setClickedBoard(newBoard);
     }
   }
   

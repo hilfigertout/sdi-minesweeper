@@ -1,5 +1,8 @@
 .App {
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .App-logo {
@@ -38,21 +41,26 @@
 }
 
 .game-board {
-  margin: auto;
+  margin-top: 20px;
+  margin-bottom: 50px;
 }
 
 .square {
-  width: 50px;
-  height: 50px;
+  width: 35px;
+  height: 35px;
   border: solid black 2px;
   background-color: gray;
-}
+  }
 
 .square-clicked {
   background-color: white;
-  width: 50px;
-  height: 50px;
+  width: 35px;
+  height: 35px;
   border: solid black 2px;
+}
+
+.mine-square {
+  background-color: black
 }
 
 .row {
@@ -61,4 +69,29 @@
   margin-left: auto;
   margin-right: auto;
   padding: 0;
+}
+
+.header {
+  background-color: lightblue;
+  margin: 10px;
+  padding: 10px;
+  border-bottom: 3px solid black;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+
+.new-game button {
+  padding: 3px;
+  background-color: darkslategray;
+  color: white;
+  margin: 5px
+}
+
+.header-win {
+   background-color: gold;
+}
+.header-lose{
+  background-color: lightcoral;
 }
