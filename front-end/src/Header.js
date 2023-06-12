@@ -24,7 +24,7 @@ const Timer = ({startTime, gameOver}) => {
 
 }
 
-const Header = () => {
+const Header = ({pastGames, setPastGames}) => {
   const [gameStatus, setGameStatus] = useContext(GameContext);
   const [startTime, setStartTime] = useState(Date.now());
 
@@ -34,6 +34,29 @@ const Header = () => {
     setStartTime(Date.now())
   }, [gameStatus.numMines, gameStatus.boardDimensions])
 
+  const newGame = (difficulty) => {
+    if (gameStatus.gameOver) {
+      let currentDifficulty = '';
+      if (gameStatus.boardDimensions[0] === 10) {
+        currentDifficulty = 'easy';
+      } else if (gameStatus.boardDimensions[0] === 12) {
+        currentDifficulty = 'medium';
+      } else if (gameStatus.boardDimensions[0] === 15) {
+        currentDifficulty = 'hard';
+      }
+      const gameObject = {time: Date.now() - startTime, playerAlive: gameStatus.playerAlive, difficulty: currentDifficulty}
+      setPastGames([...pastGames, gameObject])
+    }
+    if (difficulty === 'easy') {
+      setGameStatus({gameOver: false, playerAlive: true, numMines: 10, boardDimensions: [10, 10]})
+    } else if (difficulty === 'medium') {
+      setGameStatus({gameOver: false, playerAlive: true, numMines: 20, boardDimensions: [12, 12]})
+    } else if (difficulty === 'hard') {
+      setGameStatus({gameOver: false, playerAlive: true, numMines: 40, boardDimensions: [15, 15]})
+    }
+
+  }
+
 
   let win = gameStatus.gameOver && gameStatus.playerAlive;
   let lose = gameStatus.gameOver && !gameStatus.playerAlive;
@@ -42,9 +65,9 @@ const Header = () => {
     <div className={`header ${win ? "header-win": ""} ${lose ? "header-lose" : ""}`}>
       <div className="new-game">
         <h3>Start a New Game</h3>
-        <button onClick={() => setGameStatus({gameOver: false, playerAlive: true, numMines: 10, boardDimensions: [10, 10]})}>Easy</button>
-        <button onClick={() => setGameStatus({gameOver: false, playerAlive: true, numMines: 20, boardDimensions: [12, 12]})}>Medium</button>
-        <button onClick={() => setGameStatus({gameOver: false, playerAlive: true, numMines: 40, boardDimensions: [15, 15]})}>Hard</button>
+        <button onClick={() => newGame('easy')}>Easy</button>
+        <button onClick={() => newGame('medium')}>Medium</button>
+        <button onClick={() => newGame('hard')}>Hard</button>
       </div>
       <div className="header-content">
         <h1>Minesweeper</h1>
