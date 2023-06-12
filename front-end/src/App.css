@@ -36,3 +36,29 @@
     transform: rotate(360deg);
   }
 }
+
+.game-board {
+  margin: auto;
+}
+
+.square {
+  width: 50px;
+  height: 50px;
+  border: solid black 2px;
+  background-color: gray;
+}
+
+.square-clicked {
+  background-color: white;
+  width: 50px;
+  height: 50px;
+  border: solid black 2px;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0;
+}
